@@ -13,6 +13,15 @@ class PyramidDevViews:
 		self.view_name = 'PyramidDevViews'
 	
 	@property
+	def counter(self):
+		session = self.request.session
+		if 'counter' in session:
+			session['counter'] += 1
+		else:
+			session['counter'] = 1
+		
+		return session['counter']
+		
 	def full_name(self):
 		first = self.request.matchdict['first']
 		last = self.request.matchdict['last']
