@@ -60,11 +60,13 @@ class TelegramBot:
 				
 				update_id = self.update_id + 1
 				
+				chat_response = data['chat']['username'] + ' (' + str(chat_id) + ')' + ' => ' + text
 				fo = open('log/chat_response.txt', 'a+')
-				fo.write(json.dumps(data) + "\r\n")
-				fo.close
+				fo.write(chat_response + "\r\n")
+				# fo.write(json.dumps(data) + "\r\n")
+				fo.close()
 				
-				print(data['chat']['username'] + '(' + str(chat_id) + ')' + ' => ' + text)
+				print(chat_response)
 			else:
 				print('listening ..')
 			time.sleep(1)
