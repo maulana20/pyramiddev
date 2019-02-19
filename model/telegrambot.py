@@ -15,16 +15,22 @@ class TelegramBot:
 		
 		return res_json['result']
 		
-	def last_update(self):
-		last_update = []
-		last_update = self.send('getUpdates', {})
+	def last_update(self, update_id):
+		update_list = []
+		update_list = self.send('getUpdates', {})
 		
-		if len(last_update):
-			self.update_id = last_update[-1]['update_id']
-			last_update = self.send('getUpdates', {'offset': self.update_id})
-			return last_update[0]['message']
+		if len(update_list):
+			if update_id > 0:
+				update_list = self.send('getUpdates', {'offset': update_id})
+				if len(update_list):
+					self.update_id = update_list[0]['update_id']
+					return update_list[0]['message']
+			else:
+				self.update_id = update_list[-1]['update_id']
+				update_list = self.send('getUpdates', {'offset': self.update_id})
+				return update_list[0]['message']
 		else:
-			return last_update
+			return update_list
 		
 	def refresh_update(self, update_id):
 		refresh_update = []
@@ -41,11 +47,11 @@ class TelegramBot:
 		
 	def run(self):
 		data = []
-		data = self.last_update()
+		data = self.last_update(0)
 		update_id = self.update_id + 1
 		
 		while True:
-			data = self.refresh_update(update_id)
+			data = self.last_update(update_id)
 			
 			if update_id == self.update_id:
 				chat_id = data['chat']['id']
