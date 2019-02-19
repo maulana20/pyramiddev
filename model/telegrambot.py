@@ -11,19 +11,35 @@ class TelegramBot:
 		res_json = json.loads(response.text)
 		
 		return res_json['result']
-	
-telegrambot = TelegramBot('https://api.telegram.org', '582054434:AAEVQ8Cdihvhw1jHv5cO-AJfF6xzLkbhugE')
-params = {}
-telegram_update = telegrambot.send('getUpdates', params)
+		
+	def last_update(self):
+		last_update = []
+		last_update = self.send('getUpdates', {})
+		
+		if len(last_update):
+			last_update = self.send('getUpdates', {'offset': last_update[-1]['update_id']})
+		
+		return last_update[0]['message']
+		
+	def message(self, chat_id, text):
+		self.send('sendMessage', {'chat_id': chat_id, 'text': text})
+		
+		return
+		
+	def run(self):
+		last_update = []
+		last_update = self.last_update()
+		
+		if len(last_update):
+			chat_id = last_update['chat']['id']
+			text = last_update['text']
+			self.message(chat_id, text)
+		
+		return 'listening ..'
 
-update_id = telegram_update[-1]['update_id']
-params = {}
-if update_id:
-	params['offset'] = update_id
-telegram_update = telegrambot.send('getUpdates', params)
+host = 'https://api.telegram.org'
+token = '582054434:AAEVQ8Cdihvhw1jHv5cO-AJfF6xzLkbhugE'
 
-chat_id = telegram_update[-1]['message']['chat']['id']
-params = {'chat_id': chat_id, 'text': 'hai'}
-telegrambot.send('sendMessage', params)
-
-print('running')
+telegram = TelegramBot(host, token)
+last_update = telegram.run()
+print(last_update)
