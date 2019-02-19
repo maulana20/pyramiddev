@@ -45,15 +45,14 @@ class TelegramBot:
 		update_id = self.update_id + 1
 		
 		while True:
-			if self.update_id > 0:
-				data = self.refresh_update(update_id)
+			data = self.refresh_update(update_id)
 			
 			if update_id == self.update_id:
 				chat_id = data['chat']['id']
 				text = data['text']
 				self.message(chat_id, text)
 				
-				update_id = update_id + 1
+				update_id = self.update_id + 1
 				
 				print(data['chat']['username'] + '(' + str(chat_id) + ')' + ' => ' + text)
 			else:
