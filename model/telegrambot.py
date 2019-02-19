@@ -60,6 +60,10 @@ class TelegramBot:
 				
 				update_id = self.update_id + 1
 				
+				fo = open('log/chat_response.txt', 'a+')
+				fo.write(json.dumps(data) + "\r\n")
+				fo.close
+				
 				print(data['chat']['username'] + '(' + str(chat_id) + ')' + ' => ' + text)
 			else:
 				print('listening ..')
