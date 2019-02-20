@@ -1,6 +1,7 @@
 from setuptools import setup
 
 requires = [
+	'deform',
 	'pyramid',
 	'pyramid_chameleon',
 	'waitress',
