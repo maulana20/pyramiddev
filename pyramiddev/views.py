@@ -56,6 +56,9 @@ pages = {
 		print('Deleted')
 		return { 'page_title': 'Delete View' }
 	"""
+	
+from .models import DBSession, Page
+
 class WikiPage(colander.MappingSchema):
 	title = colander.SchemaNode(colander.String())
 	body = colander.SchemaNode(colander.String(), widget=deform.widget.RichTextWidget())
@@ -75,7 +78,8 @@ class WikiViews(object):
 	
 	@view_config(route_name='wiki_view', renderer='wiki_view.pt')
 	def wiki_view(self):
-		return dict(pages=pages.values())
+		pages = DBSession.query(Page).order_by(Page.title)
+		return dict(title='Wiki View', pages=pages)
 	
 	@view_config(route_name='wikipage_add', renderer='wikipage_addedit.pt')
 	def wikipage_add(self):
@@ -89,13 +93,23 @@ class WikiViews(object):
 				# Form is NOT valid
 				return dict(form=e.render())
 			
+			# Add a new page to the database
+			new_title = appstruct['title']
+			new_body = appstruct['body']
+			DBSession.add(Page(title=new_title, body=new_body))
+			
 			# Form is valid, make a new identifier and add to list
-			last_uid = int(sorted(pages.keys())[-1])
-			new_uid = str(last_uid + 1)
-			pages[new_uid] = dict(uid=new_uid, title=appstruct['title'], body=appstruct['body'])
+			# last_uid = int(sorted(pages.keys())[-1])
+			# new_uid = str(last_uid + 1)
+			# pages[new_uid] = dict(uid=new_uid, title=appstruct['title'], body=appstruct['body'])
+			
+			# Get the new ID and redirect
+			page = DBSession.query(Page).filter_by(title=new_title).one()
+			new_uid = page.uid
 			
 			# Now visit new page
 			url = self.request.route_url('wikipage_view', uid=new_uid)
+			
 			return HTTPFound(url)
 		
 		return dict(form=form)
@@ -103,13 +117,15 @@ class WikiViews(object):
 	@view_config(route_name='wikipage_view', renderer='wikipage_view.pt')
 	def wikipage_view(self):
 		uid = self.request.matchdict['uid']
-		page = pages[uid]
+		page = DBSession.query(Page).filter_by(uid=uid).one()
+		# page = pages[uid]
 		return dict(page=page)
 	
 	@view_config(route_name='wikipage_edit', renderer='wikipage_addedit.pt')
 	def wikipage_edit(self):
 		uid = self.request.matchdict['uid']
-		page = pages[uid]
+		page = DBSession.query(Page).filter_by(uid=uid).one()
+		# page = pages[uid]
 		
 		wiki_form = self.wiki_form
 		
@@ -124,9 +140,13 @@ class WikiViews(object):
 			page['title'] = appstruct['title']
 			page['body'] = appstruct['body']
 
-			url = self.request.route_url('wikipage_view', uid=page['uid'])
+			url = self.request.route_url('wikipage_view', uid=uid)
+			# url = self.request.route_url('wikipage_view', uid=page['uid'])
 			return HTTPFound(url)
 		
-		form = wiki_form.render(page)
+		form = self.wiki_form.render(
+			dict(uid=page.uid, title=page.title, body=page.body)
+		)
+		# form = wiki_form.render(page)
 		
 		return dict(page=page, form=form)

@@ -5,6 +5,9 @@ requires = [
 	'pyramid',
 	'pyramid_chameleon',
 	'waitress',
+	'pyramid_tm',
+	'sqlalchemy',
+	'zope.sqlalchemy',
 ]
 
 dev_requires = [
@@ -22,6 +25,9 @@ setup(
 	entry_points={
 		'paste.app_factory': [
 			'main = pyramiddev:main'
+		],
+		'console_scripts': [
+			'initialize_pyramiddev_db = pyramiddev.initialize_db:main'
 		],
 	},
 )
