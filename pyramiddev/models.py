@@ -57,14 +57,24 @@ def get_db_session():
 class User(Base):
 	__tablename__= 'tblUser'
 	user_id = Column(Integer, primary_key=True)
+	group_id = Column(Integer, ForeignKey('tblGroup.group_id'))
 	user_name = Column(String(50))
 	user_realname = Column(String(50))
 	user_status = Column(String(1))
 	
-	def __init__(self, user_name, user_realname, user_status):
+	def __init__(self, group_id, user_name, user_realname, user_status):
+		self.group_id = group_id
 		self.user_name = user_name
 		self.user_realname = user_realname
 		self.user_status = user_status
+	
+class Group(Base):
+	__tablename__ = 'tblGroup'
+	group_id = Column(Integer, primary_key=True)
+	group_name = Column(String(50))
+	
+	def __init__(self, group_name):
+		self.group_name = group_name
 	
 class Root(object):
 	__acl__ = [(Allow, Everyone, 'view')]

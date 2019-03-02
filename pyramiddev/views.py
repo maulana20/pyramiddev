@@ -11,6 +11,7 @@ import json
 
 from .models import (
 	User,
+	Group,
 	get_db_session,
 	)
 	
@@ -32,12 +33,13 @@ class PyramiddevView(object):
 	def user_list(self):
 		user_list = []
 		
-		res = self.DBSession.query(User).filter_by(user_status='A')
+		res = self.DBSession.query(User.user_id, Group.group_name, User.user_name, User.user_realname, User.user_status).join(Group).filter(User.group_id==Group.group_id).filter(User.user_status=='A')
 		for list in res:
 			data = {}
 			data['user_id'] = list.user_id
 			data['user_name'] = list.user_name
 			data['user_realname'] = list.user_realname
+			data['group_name'] = list.group_name
 			
 			user_list.append(data)
 		
