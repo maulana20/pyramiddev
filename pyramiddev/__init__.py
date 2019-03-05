@@ -4,7 +4,6 @@ from pyramid.session import UnencryptedCookieSessionFactoryConfig
 from sqlalchemy import engine_from_config
 
 from .models import ( initialize_db, get_engine_list )
-from .models import ( DBSession, Base )
 
 def main(global_config, **settings):
 	engine_list = get_engine_list(settings, 'sqlalchemy.')
