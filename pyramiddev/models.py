@@ -1,26 +1,13 @@
 from pyramid.security import Allow, Everyone
 
-from sqlalchemy import (
-	Column,
-	Index,
-	Integer,
-	String,
-	Text,
-	ForeignKey,
-	create_engine,
-	Numeric,
-	DateTime,
-	Float,
-	)
+from sqlalchemy import create_engine
+from sqlalchemy import ( ForeignKey )
+from sqlalchemy import ( Column, Integer, String )
 
 from sqlalchemy.ext.declarative import declarative_base
 
-from sqlalchemy.orm import (
-	scoped_session,
-	sessionmaker,
-	relationship,
-	Session,
-	)
+from sqlalchemy.orm import ( scoped_session, sessionmaker )
+from sqlalchemy.orm import Session
 
 from zope.sqlalchemy import ZopeTransactionExtension
 

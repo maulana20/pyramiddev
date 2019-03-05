@@ -1,20 +1,18 @@
 import urllib.parse
+import os
+import json
+
 from pyramid.response import Response
+
 from pyramid.view import view_config, forbidden_view_config
 from sqlalchemy.orm.exc import NoResultFound
 from pyramid.httpexceptions import HTTPFound, HTTPNotFound, HTTPForbidden
 
 from sqlalchemy.orm import joinedload
 
-import os
-import json
+from .models import get_db_session
+from .models import ( User, Group )
 
-from .models import (
-	User,
-	Group,
-	get_db_session,
-	)
-	
 @view_config(context=HTTPForbidden)
 def error_view(exc, request):
 	msg = exc.args[0] if exc.args else ""
@@ -24,11 +22,11 @@ class PyramiddevView(object):
 	def __init__(self, request):
 		self.request = request
 		self.DBSession = get_db_session()
-	
+
 	@view_config(route_name='home', renderer='json')
 	def home(self):
 		return {'project': 'pyramiddev'}
-	
+
 	@view_config(route_name='user-list', renderer='json')
 	def user_list(self):
 		user_list = []
@@ -44,7 +42,7 @@ class PyramiddevView(object):
 			user_list.append(data)
 		
 		return {'user_list': user_list}
-	
+
 conn_err_msg = """\
 Pyramid is having a problem using your SQL database.  The problem
 might be caused by one of the following things:
