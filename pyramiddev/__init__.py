@@ -1,8 +1,6 @@
 from pyramid.config import Configurator
 from pyramid.session import UnencryptedCookieSessionFactoryConfig
 
-from sqlalchemy import engine_from_config
-
 from .models import ( initialize_db, get_engine_list )
 
 def main(global_config, **settings):
