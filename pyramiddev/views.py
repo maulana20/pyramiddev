@@ -12,8 +12,7 @@ from pyramid.security import ( remember, forget )
 
 from sqlalchemy.orm import joinedload
 
-from .models import get_db_session
-from .models import ( User, Group )
+from .models import UserModel
 
 @view_config(context=HTTPForbidden)
 def error_view(exc, request):
@@ -23,39 +22,29 @@ def error_view(exc, request):
 class PyramiddevView(object):
 	def __init__(self, request):
 		self.request = request
-		self.DBSession = get_db_session()
 
 	@view_config(route_name='home', renderer='json')
 	def home(self):
 		return {'project': 'pyramiddev'}
 
-	@view_config(route_name='user-list', renderer='json', permission='user')
+	@view_config(route_name='user-list', renderer='json', permission='USER')
 	def user_list(self):
-		user_list = []
+		user = UserModel()
+		user_list = user.getList()
 		
-		res = self.DBSession.query(User.user_id, Group.group_name, User.user_name, User.user_realname, User.user_status).join(Group).filter(User.group_id==Group.group_id).filter(User.user_status=='A')
-		for list in res:
-			data = {}
-			data['user_id'] = list.user_id
-			data['user_name'] = list.user_name
-			data['user_realname'] = list.user_realname
-			data['group_name'] = list.group_name
-			
-			user_list.append(data)
-		
-		return {'user_list': user_list}
+		return { 'user_list': user_list }
 
 	@view_config(route_name='login')
 	def login(self):
 		request = self.request
 		headers = remember(request, 'gabon')
-		return HTTPFound(location='http://localhost:6543/user-list', headers=headers)
+		return HTTPFound(location='http://localhost:6543/', headers=headers)
 
 	@view_config(route_name='logout')
 	def logout(self):
 		request = self.request
 		headers = forget(request)
-		return HTTPFound(location='http://localhost:6543/user-list', headers=headers)
+		return HTTPFound(location='http://localhost:6543/', headers=headers)
 
 conn_err_msg = """\
 Pyramid is having a problem using your SQL database.  The problem

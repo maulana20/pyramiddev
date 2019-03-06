@@ -1,6 +1,6 @@
 import bcrypt
 
-GROUPS = {'gabon': ['group:administration']}
+GROUPS = {'gabon': ['Administration']}
 
 def groupfinder(user, request):
 	return GROUPS.get(user, [])

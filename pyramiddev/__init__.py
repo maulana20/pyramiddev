@@ -4,7 +4,7 @@ from pyramid.authorization import ACLAuthorizationPolicy
 from pyramid.config import Configurator
 from pyramid.session import UnencryptedCookieSessionFactoryConfig
 
-from .models import ( initialize_db, get_engine_list )
+from .adapters import ( initialize_db, get_engine_list )
 
 from .security import groupfinder
 
@@ -12,7 +12,7 @@ def main(global_config, **settings):
 	engine_list = get_engine_list(settings, 'sqlalchemy.')
 	initialize_db(engine_list)
 	my_session_factory = UnencryptedCookieSessionFactoryConfig('itsaseekreet')
-	config = Configurator(settings = settings, root_factory = 'pyramiddev.models.Root', session_factory = my_session_factory)
+	config = Configurator(settings = settings, root_factory = 'pyramiddev.adapters.Root', session_factory = my_session_factory)
 	
 	# Security policies
 	authn_policy = AuthTktAuthenticationPolicy( settings['pyramiddev.secret'], callback=groupfinder, hashalg='sha512' )
