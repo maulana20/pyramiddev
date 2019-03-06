@@ -8,6 +8,8 @@ from pyramid.view import view_config, forbidden_view_config
 from sqlalchemy.orm.exc import NoResultFound
 from pyramid.httpexceptions import HTTPFound, HTTPNotFound, HTTPForbidden
 
+from pyramid.security import ( remember, forget )
+
 from sqlalchemy.orm import joinedload
 
 from .models import get_db_session
@@ -27,7 +29,7 @@ class PyramiddevView(object):
 	def home(self):
 		return {'project': 'pyramiddev'}
 
-	@view_config(route_name='user-list', renderer='json')
+	@view_config(route_name='user-list', renderer='json', permission='user')
 	def user_list(self):
 		user_list = []
 		
@@ -42,6 +44,18 @@ class PyramiddevView(object):
 			user_list.append(data)
 		
 		return {'user_list': user_list}
+
+	@view_config(route_name='login')
+	def login(self):
+		request = self.request
+		headers = remember(request, 'gabon')
+		return HTTPFound(location='http://localhost:6543/user-list', headers=headers)
+
+	@view_config(route_name='logout')
+	def logout(self):
+		request = self.request
+		headers = forget(request)
+		return HTTPFound(location='http://localhost:6543/user-list', headers=headers)
 
 conn_err_msg = """\
 Pyramid is having a problem using your SQL database.  The problem

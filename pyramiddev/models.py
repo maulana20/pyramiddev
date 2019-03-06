@@ -64,7 +64,7 @@ class Group(Base):
 		self.group_name = group_name
 	
 class Root(object):
-	__acl__ = [(Allow, Everyone, 'view')]
+	__acl__ = [(Allow, Everyone, 'view'), (Allow, 'group:administration', 'user')]
 	
 	def __init__(self, request):
 		pass
