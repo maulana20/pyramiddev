@@ -37,7 +37,9 @@ class PyramiddevView(object):
 	@view_config(route_name='login')
 	def login(self):
 		request = self.request
-		headers = remember(request, 'gabon')
+		user = UserModel()
+		user_id = user.getId('gabon')
+		headers = remember(request, user_id)
 		return HTTPFound(location='http://localhost:6543/', headers=headers)
 
 	@view_config(route_name='logout')

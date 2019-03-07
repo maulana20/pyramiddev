@@ -2,7 +2,7 @@ from pyramid.security import Allow, Everyone
 
 from sqlalchemy import create_engine
 from sqlalchemy import ( ForeignKey )
-from sqlalchemy import ( Column, Integer, String )
+from sqlalchemy import ( Column, Integer, String, Text )
 
 from sqlalchemy.ext.declarative import declarative_base
 
@@ -59,16 +59,32 @@ class GroupTable(Base):
 	__tablename__ = 'tblGroup'
 	group_id = Column(Integer, primary_key=True)
 	group_name = Column(String(50))
+	group_access = Column(Text)
 	
-	def __init__(self, group_name):
+	def __init__(self, group_name, group_access):
 		self.group_name = group_name
+		self.group_access = group_access
 	
 class Root(object):
-	acl_list = []
-	acl_list.append((Allow, Everyone, 'view'))
-	acl_list.append((Allow, 'Administration', ('ADMINISTRATION', 'USER', 'ACCOUNTING', 'OPERATIONAL', 'FINANCE')))
-	
-	__acl__ = acl_list
+	__acl__ = [
+		(Allow, 'ADMINISTRATION', 'ADMINISTRATION'),
+		(Allow, 'USER', 'USER'),
+		(Allow, 'GROUP', 'GROUP'),
+		(Allow, 'USER_LOG', 'USER_LOG'),
+		(Allow, 'OPERATIONAL', 'OPERATIONAL'),
+		(Allow, 'ACCOUNTING', 'ACCOUNTING'),
+		(Allow, 'COA', 'COA'),
+		(Allow, 'JOURNAL', 'JOURNAL'),
+		(Allow, 'GENERALLEDGER', 'GENERALLEDGER'),
+		(Allow, 'TRIALBALANCE', 'TRIALBALANCE'),
+		(Allow, 'BALANCESHEET', 'BALANCESHEET'),
+		(Allow, 'FINANCE', 'FINANCE'),
+		(Allow, 'GENERALCASHBANK', 'GENERALCASHBANK'),
+		(Allow, 'INTERCASHBANK', 'INTERCASHBANK'),
+		(Allow, 'POSTING', 'POSTING'),
+		(Allow, 'CLOSING', 'CLOSING'),
+		(Allow, 'PERIOD', 'PERIOD'),
+	]
 	
 	def __init__(self, request):
 		pass

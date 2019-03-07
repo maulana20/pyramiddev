@@ -1,6 +1,8 @@
 import bcrypt
 
-GROUPS = {'gabon': ['Administration']}
+from .models import UserModel
 
-def groupfinder(user, request):
-	return GROUPS.get(user, [])
+def groupfinder(user_id, request):
+	user = UserModel()
+	acl_list = user.getAcl(user_id)
+	return acl_list
