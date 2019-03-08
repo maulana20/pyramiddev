@@ -44,10 +44,26 @@ class UserModel():
 		
 		return res.user_id
 
-	def isUserPass(self, username, password):
-		password = hashlib.md5(bytes(password, "ascii"))
-		password = password.hexdigest()
+	def getUserName(self, user_id):
+		res = self.DBSession.query(UserTable.user_name).filter(UserTable.user_id==user_id).first()
 		
-		res = self.DBSession.query(func.count(UserTable.user_id)).filter(UserTable.user_name==username).filter(UserTable.password==password).first()
+		return res.user_name
+
+	def isUserPass(self, username, password):
+		pw = PasswordModel(password)
+		pw_decode = pw.decode()
+		
+		res = self.DBSession.query(func.count(UserTable.user_id)).filter(UserTable.user_name==username).filter(UserTable.password==pw_decode).first()
 		
 		return res[0] > 0
+
+class PasswordModel():
+	def __init__(self, password):
+		self.password = password
+
+	def decode(self):
+		password = self.password
+		password = hashlib.md5(bytes(self.password, "ascii"))
+		password = password.hexdigest()
+		
+		return password

@@ -26,7 +26,10 @@ class PyramiddevView(object):
 
 	@view_config(route_name='home', renderer='json')
 	def home(self):
-		return {'project': 'pyramiddev', 'username': self.logged_in}
+		user = UserModel()
+		user_name = user.getUserName(self.logged_in) if self.logged_in else '' 
+		
+		return {'project': 'pyramiddev', 'username': user_name}
 
 	@view_config(route_name='user-list', renderer='json', permission='USER')
 	def user_list(self):
