@@ -46,12 +46,14 @@ class UserTable(Base):
 	user_id = Column(Integer, primary_key=True)
 	group_id = Column(Integer, ForeignKey('tblGroup.group_id'))
 	user_name = Column(String(50))
+	password = Column(String(50))
 	user_realname = Column(String(50))
 	user_status = Column(String(1))
 	
-	def __init__(self, group_id, user_name, user_realname, user_status):
+	def __init__(self, group_id, user_name, password, user_realname, user_status):
 		self.group_id = group_id
 		self.user_name = user_name
+		self.password = password
 		self.user_realname = user_realname
 		self.user_status = user_status
 	

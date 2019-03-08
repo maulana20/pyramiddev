@@ -22,10 +22,11 @@ def error_view(exc, request):
 class PyramiddevView(object):
 	def __init__(self, request):
 		self.request = request
+		self.logged_in = request.authenticated_userid
 
 	@view_config(route_name='home', renderer='json')
 	def home(self):
-		return {'project': 'pyramiddev'}
+		return {'project': 'pyramiddev', 'username': self.logged_in}
 
 	@view_config(route_name='user-list', renderer='json', permission='USER')
 	def user_list(self):
@@ -37,11 +38,19 @@ class PyramiddevView(object):
 	@view_config(route_name='login')
 	def login(self):
 		request = self.request
+		username = request.params['user']
+		password = request.params['password']
+		
 		user = UserModel()
-		user_id = user.getId('gabon')
-		headers = remember(request, user_id)
-		return HTTPFound(location='http://localhost:6543/', headers=headers)
-
+		is_userpass = user.isUserPass(username, password)
+		if (is_userpass == True):
+			user_id = user.getId(username)
+			
+			headers = remember(request, user_id)
+			return HTTPFound(location='http://localhost:6543/', headers=headers)
+		else:
+			return Response("Failed")
+	
 	@view_config(route_name='logout')
 	def logout(self):
 		request = self.request

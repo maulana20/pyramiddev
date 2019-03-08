@@ -1,8 +1,12 @@
+from sqlalchemy import func
+
 from .adapters import get_db_session
 from .adapters import ( UserTable, GroupTable )
 
 from phpserialize import serialize, unserialize
 from io import BytesIO
+
+import hashlib
 
 class UserModel():
 	def __init__(self):
@@ -39,3 +43,11 @@ class UserModel():
 		res = self.DBSession.query(UserTable.user_id).filter(UserTable.user_name==user_name).first()
 		
 		return res.user_id
+
+	def isUserPass(self, username, password):
+		password = hashlib.md5(bytes(password, "ascii"))
+		password = password.hexdigest()
+		
+		res = self.DBSession.query(func.count(UserTable.user_id)).filter(UserTable.user_name==username).filter(UserTable.password==password).first()
+		
+		return res[0] > 0
