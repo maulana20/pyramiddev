@@ -2,6 +2,8 @@ import urllib.parse
 import os
 import json
 
+import socket
+
 from pyramid.response import Response
 
 from pyramid.view import view_config, forbidden_view_config
@@ -50,7 +52,8 @@ class PyramiddevView(object):
 			user_id = user.getId(username)
 			
 			headers = remember(request, user_id)
-			return HTTPFound(location='http://localhost:6543/', headers=headers)
+			hostname = socket.gethostbyname(socket.gethostname()) # default localhost
+			return HTTPFound(location='http://' + hostname  + ':6543/', headers=headers)
 		else:
 			return Response("Failed")
 	
@@ -58,7 +61,8 @@ class PyramiddevView(object):
 	def logout(self):
 		request = self.request
 		headers = forget(request)
-		return HTTPFound(location='http://localhost:6543/', headers=headers)
+		hostname = socket.gethostbyname(socket.gethostname()) # default localhost
+		return HTTPFound(location='http://'+ hostname + ':6543/', headers=headers)
 
 conn_err_msg = """\
 Pyramid is having a problem using your SQL database.  The problem
